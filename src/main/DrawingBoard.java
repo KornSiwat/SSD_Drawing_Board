@@ -3,9 +3,11 @@ package main;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.swing.JPanel;
 import objects.*;
+import java.util.Collections;
 
 public class DrawingBoard extends JPanel {
 
@@ -24,19 +26,37 @@ public class DrawingBoard extends JPanel {
 	}
 	
 	public void addGObject(GObject gObject) {
-		// TODO: Implement this method.
+		gObjects.add(gObject);
+
+		repaint();
 	}
 	
 	public void groupAll() {
-		// TODO: Implement this method.
+		CompositeGObject compositeGObject = new CompositeGObject();
+
+		for (GObject gObject: gObjects) {
+			compositeGObject.add(gObject);
+		}
+
+		gObjects.clear();
+
+		compositeGObject.recalculateRegion();
+
+		gObjects.add(compositeGObject);
+
+		repaint();
 	}
 
 	public void deleteSelected() {
-		// TODO: Implement this method.
+		gObjects.remove(target);
+
+		repaint();
 	}
 	
 	public void clear() {
-		// TODO: Implement this method.
+		gObjects.clear();
+
+		repaint();
 	}
 	
 	@Override
@@ -71,22 +91,58 @@ public class DrawingBoard extends JPanel {
 	}
 
 	class MAdapter extends MouseAdapter {
+		private int x;
+		private int y;
 
-		// TODO: You need some variables here
-		
 		private void deselectAll() {
-			// TODO: Implement this method.
+			for (GObject gObject : gObjects) {
+				gObject.deselected();
+			}
+
+			target = null;
 		}
-		
+
 		@Override
 		public void mousePressed(MouseEvent e) {
-			// TODO: Implement this method.
+			this.x = e.getX();
+			this.y = e.getY();
+
+			deselectAll();
+
+			Collections.reverse(gObjects);
+
+			for (GObject gObject : gObjects) {
+				if (gObject.pointerHit(x, y)) {
+					target = gObject;
+					gObject.selected();
+
+					break;
+				}
+			}
+
+			Collections.reverse(gObjects);
+
+			repaint();
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			// TODO: Implement this method.
+			if (target != null) {
+				int currentX = e.getX();
+				int currentY = e.getY();
+				int selectedX = this.x;
+				int selectedY = this.y;
+
+				int xOffset = currentX - selectedX;
+				int yOffset = currentY - selectedY;
+
+				target.move(xOffset, yOffset);
+
+				repaint();
+
+				this.x = e.getX();
+				this.y = e.getY();
+			}
 		}
 	}
-	
 }

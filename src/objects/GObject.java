@@ -23,20 +23,23 @@ public abstract class GObject {
 	}
 
 	public boolean pointerHit(int pointerX, int pointerY) {
-		// TODO: Implement this method.
-		return false;
+		boolean isInXRange = pointerX >= x && pointerX <= x + width;
+		boolean isInYRange = pointerY >= y && pointerY <= y + height;
+
+		return isInXRange && isInYRange;
 	}
 	
 	public void selected() {
-		// TODO: Implement this method.
+		this.selected = true;
 	}
 	
 	public void deselected() {
-		// TODO: Implement this method.
+		this.selected = false;
 	}
 	
 	public void move(int dX, int dY) {
-		// TODO: Implement this method.
+		this.x += dX;
+		this.y += dY;
 	}
 
 	public final void paint(Graphics g) {
